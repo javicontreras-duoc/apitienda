@@ -1,8 +1,8 @@
 package fullstack.apitienda.service;
 
 import java.util.List;
+import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import fullstack.apitienda.model.Producto;
@@ -10,22 +10,29 @@ import fullstack.apitienda.repository.ProductoRepository;
 
 @Service
 public class ProductoService {
-    @Autowired
-    private ProductoRepository productoRepository;
+    private final ProductoRepository productoRepository;
+
+    public ProductoService(ProductoRepository productoRepository) {
+        this.productoRepository = productoRepository;
+    }
 
     public List<Producto> listarTodos() {
         return productoRepository.findAll();
     }
 
-    public Producto getProductoById(Long id) {
-        return productoRepository.findById(id).orElse(null);
+    public Optional<Producto> getProductoById(Long id) {
+        return productoRepository.findById(id);
     }
 
     public Producto saveProducto(Producto producto) {
         return productoRepository.save(producto);
     }
 
-    public void deleteProducto(Long id) {
-        productoRepository.deleteById(id);
+    public boolean deleteProducto(Long id) {
+        if (productoRepository.existsById(id)) {
+            productoRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }
